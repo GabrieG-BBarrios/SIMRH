@@ -653,7 +653,8 @@ body {
 
   /* Cuando está expandido, establecemos el ancho a 300px (o el valor que desees) */
 .autocomplete-container form.expanded {
-  width: 250px;
+  width: 420px;
+  height: 45px;
 }
 
 .autocomplete-container form .logo_google {
@@ -672,3 +673,15 @@ body {
   width: 250px;
   background-color: transparent;
 }
+
+
+.container_input  {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  width: 40%;
+}
+
+
+/* .autocomplete-container select {
+} */

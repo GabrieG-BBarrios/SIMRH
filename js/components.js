@@ -18,8 +18,7 @@ logo.addEventListener('click', () => form.classList.toggle('expanded'));
 closeIcon.addEventListener('click', () => form.classList.remove('expanded'));
 
 
-// Para obtener una referencia al campo de entrada de búsqueda de lugares o direcciones
-var input = document.getElementById('autocomplete-input');
+
 var map = L.map('map').setView([20.525150188554214, -98.92498170356545,], 8.4,);
 map.attributionControl.setPrefix(''); // Esto elimina cualquier texto de atribución
 
@@ -697,37 +696,122 @@ layers.forEach(function (layerInfo) {
   });
 });
 
+
 var marker; // Declara la variable del marcador aquí
 // Función de callback que se llama cuando se carga la API de Google Maps
+
+// function initialize() {
+
+ 
+  
+
+
+  
+
+
+//   var autocomplete = new google.maps.places.Autocomplete(input);
+
+//   autocomplete.addListener('place_changed', function () {
+//     var place = autocomplete.getPlace();
+//     if (!place.geometry) {
+//       return;
+//     }
+
+//     var lat = place.geometry.location.lat();
+//     var lng = place.geometry.location.lng();
+
+//     map.setView([lat, lng], 14);
+
+//     // Elimina cualquier marcador previo
+//     if (marker) {
+//       map.removeLayer(marker);
+//     }
+//     // Crea y agrega un marcador en la ubicación encontrada
+//     marker = L.marker([lat, lng]).addTo(map);
+
+//     // Agrega un manejador de eventos de clic al marcador
+//     marker.on('click', function () {
+//       // Elimina el marcador al hacer clic en él
+//       map.removeLayer(marker);
+//       marker = null; // Establece la variable de marcador como nula
+//     });
+//   });
+// }
+
+
 function initialize() {
-  var autocomplete = new google.maps.places.Autocomplete(input);
+  var searchTypeSelector = document.getElementById('search-type-selector');
+  var coordinatesInput = document.getElementById('coordinates-input');
+  var autocompleteInput = document.getElementById('autocomplete-input');
+
+  
+
+  // Maneja el cambio en el tipo de búsqueda (por dirección o coordenadas)
+  searchTypeSelector.addEventListener('change', function () {
+    var selectedOption = searchTypeSelector.value;
+
+    // Muestra u oculta los campos de entrada según el tipo de búsqueda seleccionado
+    coordinatesInput.style.display = selectedOption === 'coordinates' ? 'block' : 'none';
+    autocompleteInput.style.display = selectedOption === 'address' ? 'block' : 'none';
+
+    // Limpia el mapa y el marcador
+    clearMap();
+  });
+
+  // Inicializa el autocompletado para la búsqueda por dirección
+  var autocomplete = new google.maps.places.Autocomplete(autocompleteInput);
 
   autocomplete.addListener('place_changed', function () {
-    var place = autocomplete.getPlace();
-    if (!place.geometry) {
-      return;
+    handlePlaceChanged(autocomplete.getPlace());
+  });
+
+  // Maneja la entrada de coordenadas manualmente
+  coordinatesInput.addEventListener('change', function () {
+    var coordinates = coordinatesInput.value.split(',');
+    var lat = parseFloat(coordinates[0]);
+    var lng = parseFloat(coordinates[1]);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      map.setView([lat, lng], 14);
+      clearMap();
+      addMarker([lat, lng]);
+    } else {
+      alert('Invalid coordinates. Please enter valid latitude and longitude.');
     }
-
-    var lat = place.geometry.location.lat();
-    var lng = place.geometry.location.lng();
-
-    map.setView([lat, lng], 14);
-
-    // Elimina cualquier marcador previo
-    if (marker) {
-      map.removeLayer(marker);
-    }
-    // Crea y agrega un marcador en la ubicación encontrada
-    marker = L.marker([lat, lng]).addTo(map);
-
-    // Agrega un manejador de eventos de clic al marcador
-    marker.on('click', function () {
-      // Elimina el marcador al hacer clic en él
-      map.removeLayer(marker);
-      marker = null; // Establece la variable de marcador como nula
-    });
   });
 }
+
+function handlePlaceChanged(place) {
+  if (!place.geometry) {
+    return;
+  }
+
+  var lat = place.geometry.location.lat();
+  var lng = place.geometry.location.lng();
+
+  map.setView([lat, lng], 14);
+  clearMap();
+  addMarker([lat, lng]);
+}
+
+function clearMap() {
+  if (marker) {
+    map.removeLayer(marker);
+  }
+}
+
+function addMarker(coords) {
+  marker = L.marker(coords).addTo(map);
+
+  // Agrega un manejador de eventos de clic al marcador
+  marker.on('click', function () {
+    // Elimina el marcador al hacer clic en él
+    clearMap();
+  });
+}
+
+
+
 // Carga la API de Google Maps utilizando un método de callback
 function loadGoogleMapsScript() {
   var script = document.createElement('script');
@@ -736,6 +820,8 @@ function loadGoogleMapsScript() {
   script.defer = true;
   document.head.appendChild(script);
 }
+
+
 // Carga la API de Google Maps
 loadGoogleMapsScript();
 

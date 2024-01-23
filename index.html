@@ -852,7 +852,15 @@
     <div class="autocomplete-container">
       <form id="form">
         <img id="logo" class="logo_google" src="img/google.png" alt="">
-        <input id="autocomplete-input" type="text" placeholder="Buscar Google O Escribir Url">
+        <div class="container_input">
+          <label for="search-type-selector">Tipo de búsqueda:</label>
+          <select id="search-type-selector">
+            <option value="address">Buscar por Dirección</option>
+            <option value="coordinates">Buscar por Coordenadas</option>
+          </select>
+        </div>
+        <input type="text" id="coordinates-input" placeholder="Ingrese coordenadas (latitud, longitud)" style="display: none;">
+        <input type="text" id="autocomplete-input" placeholder="Ingresa la direccion o lugar">
         <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000"
           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18" />
