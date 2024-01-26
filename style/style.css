@@ -18,6 +18,14 @@ body {
   overflow: hidden;
 }
 
+.download-icon {
+  position: absolute;
+  top: 400px;
+  left: 10px; 
+  cursor: pointer;
+  z-index: 1000;
+}
+
 .watermark-image {
   max-width: 45%;
   height: auto;
@@ -645,25 +653,37 @@ body {
   justify-content: space-between;
   align-items: center;
   border-radius: 30px;
-  box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
-    -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 0px 3px #98989A,
+    inset 0px 2px 4px rgba(0, 0, 0, 0.8);
   padding: 10px;
   transition: .5s;
 }
 
-  /* Cuando está expandido, establecemos el ancho a 300px (o el valor que desees) */
-.autocomplete-container form.expanded {
-  width: 420px;
-  height: 45px;
+.autocomplete-container form img {
+  height: 40px;
+  width: 40px;
 }
+
+.autocomplete-container form svg {
+  height: 24px;
+  width: 24px;
+}
+
 
 .autocomplete-container form .logo_google {
-  margin-left: -5px;
+  margin-left: -10px;
 }
 
-.autocomplete-container form img,  .autocomplete-container form svg{
-  height: 30px;
-  width: 30px;
+.container_input label, .container_input select{
+  font-size: 11px;
+}
+
+.container_input select{
+  margin-top: 2px;
+  border-radius: 30px;
+  outline: none;
+
+  background-color: transparent;
 }
 
 .autocomplete-container input[type="text"] {
@@ -674,13 +694,21 @@ body {
   background-color: transparent;
 }
 
-
-.container_input  {
+.container_input {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
-  width: 40%;
+  width: 35%;
 }
+
+/* Cuando está expandido, establecemos el ancho a 300px (o el valor que desees) */
+.autocomplete-container form.expanded {
+  width: 420px;
+  height: 40px;
+}
+
+
+
 
 
 /* .autocomplete-container select {

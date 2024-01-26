@@ -25,6 +25,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.min.css">
   <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.min.js"></script>
 
+  <!-- leaflet.draw -->
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+
+
+
+  <!-- Leaflet.draw en español -->
+  <!-- <script src="https://unpkg.com/leaflet-draw-locales@1.0.3/dist/leaflet.draw.locales.js"></script>
+  <script src="https://cdn.rawgit.com/Leaflet/Leaflet.draw/v1.0.4/dist/leaflet.draw.js"></script> -->
+
+
   <!-- Boxiocns CDN Link -->
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
@@ -848,6 +859,8 @@
   </div>
 
   <section class="MapaSection">
+    <button class="autocomplete-container" id="obtenerUbicacionBtn">Obtener Ubicación</button>
+
     <div id="map"></div>
     <div class="autocomplete-container">
       <form id="form">
@@ -859,7 +872,8 @@
             <option value="coordinates">Buscar por Coordenadas</option>
           </select>
         </div>
-        <input type="text" id="coordinates-input" placeholder="Ingrese coordenadas (latitud, longitud)" style="display: none;">
+        <input type="text" id="coordinates-input" placeholder="Ingrese coordenadas (latitud, longitud)"
+          style="display: none;">
         <input type="text" id="autocomplete-input" placeholder="Ingresa la direccion o lugar">
         <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000"
           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

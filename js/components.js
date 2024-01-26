@@ -19,7 +19,7 @@ closeIcon.addEventListener('click', () => form.classList.remove('expanded'));
 
 
 
-var map = L.map('map').setView([20.525150188554214, -98.92498170356545,], 8.4,);
+var map = L.map('map').setView([20.44819465937593, -98.41534285830343], 8,);
 map.attributionControl.setPrefix(''); // Esto elimina cualquier texto de atribución
 
 //Mapa Base
@@ -78,6 +78,285 @@ L.control.watermark = function (opts) {
   return new L.Control.Watermark(opts);
 }
 L.control.watermark({ position: 'topright' }).addTo(map);
+
+
+// Variables globales
+var editableLayers;
+
+// Inicializa el mapa
+function initMap() {
+
+  L.drawLocal = {
+    draw: {
+      toolbar: {
+        // #TODO: esto debería reorganizarse donde las acciones estén anidadas en actions
+        // por ejemplo: actions.undo  o actions.cancel
+        actions: {
+          title: 'Cancelar dibujo',
+          text: 'Cancelar'
+        },
+        finish: {
+          title: 'Finalizar dibujo',
+          text: 'Finalizar'
+        },
+        undo: {
+          title: 'Eliminar último punto dibujado',
+          text: 'Eliminar último punto'
+        },
+        buttons: {
+          polyline: 'Dibujar una polilínea',
+          polygon: 'Dibujar un polígono',
+          rectangle: 'Dibujar un rectángulo',
+          circle: 'Dibujar un círculo',
+          marker: 'Dibujar un marcador',
+          circlemarker: 'Dibujar un marcador circular'
+        }
+      },
+      handlers: {
+        circle: {
+          tooltip: {
+            start: 'Haga clic y arrastre para dibujar un círculo.'
+          },
+          radius: 'Radio'
+        },
+        circlemarker: {
+          tooltip: {
+            start: 'Haga clic en el mapa para colocar un marcador circular.'
+          }
+        },
+        marker: {
+          tooltip: {
+            start: 'Haga clic en el mapa para colocar un marcador.'
+          }
+        },
+        polygon: {
+          tooltip: {
+            start: 'Haga clic para comenzar a dibujar la forma.',
+            cont: 'Haga clic para continuar dibujando la forma.',
+            end: 'Haga clic en el primer punto para cerrar esta forma.'
+          }
+        },
+        polyline: {
+          error: '<strong>Error:</strong> ¡Las aristas de la forma no pueden cruzarse!',
+          tooltip: {
+            start: 'Haga clic para comenzar a dibujar la línea.',
+            cont: 'Haga clic para continuar dibujando la línea.',
+            end: 'Haga clic en el último punto para finalizar la línea.'
+          }
+        },
+        rectangle: {
+          tooltip: {
+            start: 'Haga clic y arrastre para dibujar un rectángulo.'
+          }
+        },
+        simpleshape: {
+          tooltip: {
+            end: 'Suelte el mouse para finalizar el dibujo.'
+          }
+        }
+      }
+    },
+    edit: {
+      toolbar: {
+        actions: {
+          save: {
+            title: 'Guardar cambios',
+            text: 'Guardar'
+          },
+          cancel: {
+            title: 'Cancelar edición, descartar todos los cambios',
+            text: 'Cancelar'
+          },
+          clearAll: {
+            title: 'Borrar todas las capas',
+            text: 'Borrar Todo'
+          }
+        },
+        buttons: {
+          edit: 'Editar capas',
+          editDisabled: 'No hay capas para editar',
+          remove: 'Eliminar capas',
+          removeDisabled: 'No hay capas para eliminar'
+        }
+      },
+      handlers: {
+        edit: {
+          tooltip: {
+            text: 'Arrastre los manejadores o marcadores para editar las características.',
+            subtext: 'Haga clic en cancelar para deshacer los cambios.'
+          }
+        },
+        remove: {
+          tooltip: {
+            text: 'Haga clic en una característica para eliminarla.'
+          }
+        }
+      }
+    }
+  };
+
+
+  editableLayers = new L.FeatureGroup().addTo(map);
+  var drawControl = new L.Control.Draw({
+    draw: {
+      polyline: true,
+      polygon: true,
+      circle: true,
+      rectangle: true,
+      marker: true,
+    },
+    edit: {
+      featureGroup: editableLayers,
+      remove: true,
+    },
+  });
+
+  map.addControl(drawControl);
+
+  map.on('draw:created', function (e) {
+    editableLayers.addLayer(e.layer);
+    addDownloadIcon();  // Añade el ícono después de crear un polígono
+  });
+
+  // Baja más la barra ajustando el estilo
+  var drawContainer = document.querySelector('.leaflet-draw.leaflet-control');
+  drawContainer.style.top = '45px';
+}
+
+// Agregar el ícono circular de descarga
+function addDownloadIcon() {
+  // Remover el ícono anterior si existe
+  var existingDownloadIcon = document.querySelector('.download-icon');
+  if (existingDownloadIcon) {
+    existingDownloadIcon.remove();
+  }
+  // Ajusta la posición del ícono utilizando CSS
+  var downloadIconContainer = L.DomUtil.create('div', 'download-icon');
+  downloadIconContainer.innerHTML = `<img src="img/Poligono_Descarga.png" style="width: 40px; height: 40px;">`;
+  // Agrega el contenedor del ícono de descarga como un elemento secundario al contenedor principal del mapa
+  map.getContainer().appendChild(downloadIconContainer);
+  downloadIconContainer.addEventListener('click', downloadPolygons);
+}
+
+function downloadPolygons() {
+  var kmlString = toKML(editableLayers.toGeoJSON());
+  var blob = new Blob([kmlString], { type: 'application/vnd.google-earth.kml+xml' });
+  var link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = 'poligonos.kml';
+  link.click();
+}
+
+// Función para convertir GeoJSON a KML
+function toKML(geoJson) {
+  var kml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  kml += '<kml xmlns="http://www.opengis.net/kml/2.2">\n';
+  kml += '  <Document>\n';
+
+  geoJson.features.forEach(function (feature) {
+    kml += '    <Placemark>\n';
+    kml += '      <name>Geometry</name>\n';
+    kml += '      <description><![CDATA[Generated by Leaflet]]></description>\n';
+
+    if (feature.geometry.type === 'Polygon') {
+      kml += '      <Polygon>\n';
+      kml += '        <outerBoundaryIs>\n';
+      kml += '          <LinearRing>\n';
+      kml += '            <coordinates>\n';
+
+      feature.geometry.coordinates[0].forEach(function (coord) {
+        kml += '              ' + coord[0] + ',' + coord[1] + '\n';
+      });
+
+      kml += '            </coordinates>\n';
+      kml += '          </LinearRing>\n';
+      kml += '        </outerBoundaryIs>\n';
+      kml += '      </Polygon>\n';
+    } else if (feature.geometry.type === 'LineString') {
+      kml += '      <LineString>\n';
+      kml += '        <coordinates>\n';
+
+      feature.geometry.coordinates.forEach(function (coord) {
+        kml += '          ' + coord[0] + ',' + coord[1] + '\n';
+      });
+
+      kml += '        </coordinates>\n';
+      kml += '      </LineString>\n';
+    } else if (feature.geometry.type === 'Point') {
+      kml += '      <Point>\n';
+      kml += '        <coordinates>' + feature.geometry.coordinates[0] + ',' + feature.geometry.coordinates[1] + '</coordinates>\n';
+      kml += '      </Point>\n';
+    } else if (feature.geometry.type === 'Circle') {
+      // Convertir un círculo Leaflet a KML
+      var circleToPolygon = L.circleToPolygon(feature.geometry.coordinates, feature.properties.radius, 36);
+      kml += '      <Polygon>\n';
+      kml += '        <outerBoundaryIs>\n';
+      kml += '          <LinearRing>\n';
+      kml += '            <coordinates>\n';
+
+      circleToPolygon.forEach(function (coord) {
+        kml += '              ' + coord[0] + ',' + coord[1] + '\n';
+      });
+
+      kml += '            </coordinates>\n';
+      kml += '          </LinearRing>\n';
+      kml += '        </outerBoundaryIs>\n';
+      kml += '      </Polygon>\n';
+    }
+    kml += '    </Placemark>\n';
+  });
+
+  kml += '  </Document>\n';
+  kml += '</kml>\n';
+
+  return kml;
+}
+
+
+
+
+
+// Llama a initMap cuando la página se carga
+document.addEventListener('DOMContentLoaded', function () {
+  initMap();
+});
+
+var markerUbicacion;
+
+obtenerUbicacionBtn.addEventListener('click', function () {
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        var latitud = position.coords.latitude;
+        var longitud = position.coords.longitude;
+
+        console.log('Ubicación encontrada:', latitud, longitud);
+
+        // Centra el mapa en la ubicación obtenida
+        map.setView([latitud, longitud], 17);
+
+        // Elimina el marcador anterior si existe
+        if (markerUbicacion) {
+          map.removeLayer(markerUbicacion);
+        }
+
+        // Añade un marcador en la ubicación
+        markerUbicacion = L.marker([latitud, longitud]).addTo(map);
+
+        // Puedes hacer lo que necesites con la ubicación
+        alert('Ubicación encontrada: Latitud ' + latitud + ', Longitud ' + longitud);
+      },
+      function (error) {
+        console.error('Error al obtener la ubicación:', error.message);
+        alert('Error al obtener la ubicación. Por favor, inténtalo de nuevo.');
+      }
+    );
+  } else {
+    console.error('La geolocalización no es compatible con este navegador.');
+    alert('La geolocalización no es compatible con este navegador.');
+  }
+});
+
 
 // // // Estado // // //
 
@@ -702,11 +981,11 @@ var marker; // Declara la variable del marcador aquí
 
 // function initialize() {
 
- 
-  
 
 
-  
+
+
+
 
 
 //   var autocomplete = new google.maps.places.Autocomplete(input);
@@ -744,7 +1023,7 @@ function initialize() {
   var coordinatesInput = document.getElementById('coordinates-input');
   var autocompleteInput = document.getElementById('autocomplete-input');
 
-  
+
 
   // Maneja el cambio en el tipo de búsqueda (por dirección o coordenadas)
   searchTypeSelector.addEventListener('change', function () {
