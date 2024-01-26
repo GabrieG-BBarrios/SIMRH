@@ -635,6 +635,22 @@ body {
   transition: width 150ms ease 100ms;
 }
 
+.MapaSection .obtenerUbicacion {
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+
+  background: linear-gradient(90deg, #691B31, #A02142);
+  color: #fff;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 99;
+  border: none;
+}
+
 .MapaSection .autocomplete-container {
   position: absolute;
   top: 80px;
