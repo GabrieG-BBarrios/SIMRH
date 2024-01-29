@@ -1,5 +1,3 @@
-
-
 let arrow2 = document.querySelectorAll(".arrow, .arrowSub, .arrowSub2");
 for (var i = 0; i < arrow2.length; i++) {
   arrow2[i].addEventListener("click", (e) => {
@@ -20,35 +18,33 @@ document.querySelectorAll(".arrowSub").forEach(function (arrow) {
 });
 
 
-//Barra lateral esta cerrada por defecto  
-
-// let sidebar = document.querySelector(".sidebar");
-// let sidebarBtn = document.querySelector(".logo");
-// let profileContent = document.querySelector(".profile-details");
-
-// sidebarBtn.addEventListener("click", () => {
-//   sidebar.classList.toggle("close");
-// });
-
-// profileContent.addEventListener("click", () => {
-//   sidebar.classList.toggle("close");
-// });
-
-
-
-//Barra lateral esta abierta por defecto
+// Función para verificar y cerrar la barra lateral si la pantalla es menor a 500px de ancho
 let sidebar = document.querySelector(".sidebar");
 let sidebarBtn = document.querySelector(".logo-details");
 let profileContent = document.querySelector(".profile-details");
+function checkScreenWidth() {
+  if (window.innerWidth < 500) {
+    sidebar.classList.add("close");
+  } else {
+    sidebar.classList.remove("close");
+  }
+}
 
-sidebar.classList.remove("close");
+// Verificar el ancho de la pantalla al cargar la página
+checkScreenWidth();
+// Verificar el ancho de la pantalla cada vez que cambie el tamaño de la ventana
+window.addEventListener("resize", () => {
+  checkScreenWidth();
+});
 
 sidebarBtn.addEventListener("click", () => {
   sidebar.classList.toggle("close");
 });
+
 profileContent.addEventListener("click", () => {
   sidebar.classList.toggle("close");
 });
+
 
 
 // Obtén referencias a los checkboxes y la tabla de simbología
@@ -117,15 +113,4 @@ checkboxPoligonosActuacion.addEventListener('change', function () {
 checkboxPMDU_PMDUYOT.addEventListener('change', function () {
   actualizarTabla(checkboxPMDU_PMDUYOT, 'PMDU_PMDUYOT');
 });
-
-// Referencias a los nuevos checkboxes y tablas utilizando document.getElementById. Por ejemplo:
-// var checkboxNuevaOpcion = document.getElementById('chkNuevaOpcion');
-// var tablaNuevaOpcion = document.getElementById('TablaNuevaOpcion');
-
-
-// Después, agrega un nuevo oyente de cambio para el nuevo checkbox.
-// checkboxNuevaOpcion.addEventListener('change', function () {
-//   actualizarTabla(checkboxNuevaOpcion, 'TablaNuevaOpcion');
-// });
-
 

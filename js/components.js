@@ -195,7 +195,6 @@ function initMap() {
     }
   };
 
-
   editableLayers = new L.FeatureGroup().addTo(map);
   var drawControl = new L.Control.Draw({
     draw: {
@@ -305,23 +304,27 @@ function toKML(geoJson) {
     }
     kml += '    </Placemark>\n';
   });
-
   kml += '  </Document>\n';
   kml += '</kml>\n';
-
   return kml;
 }
-
-
-
-
 
 // Llama a initMap cuando la página se carga
 document.addEventListener('DOMContentLoaded', function () {
   initMap();
 });
 
-var markerUbicacion;
+
+
+
+var markerUbicacion = null;
+
+// Función para manejar el evento 'click' en el marcador
+function handleMarkerClick() {
+  map.removeLayer(markerUbicacion);
+  // Asignar null al marcador para indicar que ya no existe
+  markerUbicacion = null;
+}
 
 obtenerUbicacionBtn.addEventListener('click', function () {
   if ('geolocation' in navigator) {
@@ -329,19 +332,19 @@ obtenerUbicacionBtn.addEventListener('click', function () {
       function (position) {
         var latitud = position.coords.latitude;
         var longitud = position.coords.longitude;
-
-        console.log('Ubicación encontrada:', latitud, longitud);
-
         // Centra el mapa en la ubicación obtenida
         map.setView([latitud, longitud], 17);
 
         // Elimina el marcador anterior si existe
         if (markerUbicacion) {
-          map.removeLayer(markerUbicacion);
+          handleMarkerClick();
         }
 
         // Añade un marcador en la ubicación
         markerUbicacion = L.marker([latitud, longitud]).addTo(map);
+
+        // Agregar el listener 'click' al marcador
+        markerUbicacion.on('click', handleMarkerClick);
 
         // Puedes hacer lo que necesites con la ubicación
         alert('Ubicación encontrada: Latitud ' + latitud + ', Longitud ' + longitud);
@@ -356,6 +359,7 @@ obtenerUbicacionBtn.addEventListener('click', function () {
     alert('La geolocalización no es compatible con este navegador.');
   }
 });
+
 
 
 // // // Estado // // //
@@ -976,54 +980,11 @@ layers.forEach(function (layerInfo) {
 });
 
 
-var marker; // Declara la variable del marcador aquí
-// Función de callback que se llama cuando se carga la API de Google Maps
-
-// function initialize() {
-
-
-
-
-
-
-
-
-//   var autocomplete = new google.maps.places.Autocomplete(input);
-
-//   autocomplete.addListener('place_changed', function () {
-//     var place = autocomplete.getPlace();
-//     if (!place.geometry) {
-//       return;
-//     }
-
-//     var lat = place.geometry.location.lat();
-//     var lng = place.geometry.location.lng();
-
-//     map.setView([lat, lng], 14);
-
-//     // Elimina cualquier marcador previo
-//     if (marker) {
-//       map.removeLayer(marker);
-//     }
-//     // Crea y agrega un marcador en la ubicación encontrada
-//     marker = L.marker([lat, lng]).addTo(map);
-
-//     // Agrega un manejador de eventos de clic al marcador
-//     marker.on('click', function () {
-//       // Elimina el marcador al hacer clic en él
-//       map.removeLayer(marker);
-//       marker = null; // Establece la variable de marcador como nula
-//     });
-//   });
-// }
-
-
+var marker; 
 function initialize() {
   var searchTypeSelector = document.getElementById('search-type-selector');
   var coordinatesInput = document.getElementById('coordinates-input');
   var autocompleteInput = document.getElementById('autocomplete-input');
-
-
 
   // Maneja el cambio en el tipo de búsqueda (por dirección o coordenadas)
   searchTypeSelector.addEventListener('change', function () {
@@ -1088,7 +1049,6 @@ function addMarker(coords) {
     clearMap();
   });
 }
-
 
 
 // Carga la API de Google Maps utilizando un método de callback

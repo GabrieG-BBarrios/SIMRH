@@ -21,7 +21,7 @@ body {
 .download-icon {
   position: absolute;
   top: 400px;
-  left: 10px; 
+  left: 10px;
   cursor: pointer;
   z-index: 1000;
 }
@@ -47,22 +47,20 @@ body {
 }
 
 .sidebar .logo-details {
+  height: 78px;
+  width: auto;
   display: flex;
   align-items: center;
-  height: 60px;
-  width: 100%;
-}
-
-.sidebar .logo-details img {
-  height: 60px;
-  min-width: 78px;
-  margin-top: 20px;
   cursor: pointer;
 }
 
+.sidebar .logo-details img {
+  width: auto;
+  height: 60px;
+}
+
 .sidebar .logo-details .logo_name img {
-  margin-top: 29px;
-  width: 95%;
+  width: 171px;
   height: auto;
   transition: .6s ease;
   transition-delay: 0.1s;
@@ -97,17 +95,18 @@ body {
 
 .sidebar .nav-links,
 .sidebar.close .nav-links .sub-menu {
-  margin-top: 15px;
+  padding-top: 5px;
   max-height: 500px;
   scrollbar-width: thin;
   overflow-x: hidden;
 
   &::-webkit-scrollbar {
-    width: 2px;
+    width: 2.5px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #ddc9a3;
+    border-radius: 10px;
   }
 
   &::-webkit-scrollbar-track {
@@ -214,7 +213,7 @@ body {
   display: none;
 }
 
-.sidebar .nav-links li.showMenu .sub-menu {
+.sidebar .nav-links li.showMenu .sub-menu, .sidebar .nav-links .link_name.showMenu .sub-menu {
   display: block;
 }
 
@@ -503,11 +502,6 @@ body {
     width: calc(100% - 240px);
   }
 
-  .sidebar.close~.MapaSection {
-    left: 78px;
-    width: calc(100% - 78px);
-  }
-
   .sidebar .logo-details img {
     height: 50px;
   }
@@ -516,6 +510,35 @@ body {
 @media screen and (max-width: 767px) {
   .watermark-image {
     max-width: 70%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .sidebar.close {
+    width: 50px;
+  }
+
+  .sidebar .logo-details img {
+    height: 40px;
+
+  }
+
+  .sidebar.close .nav-links li i,
+  .sidebar .nav-links li a img {
+    min-width: 48px;
+  }
+
+  .sidebar.close .profile-details .profile-content {
+    width: 48px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sidebar.close~.MapaSection {
+    left: 48px;
+    width: calc(100% - 48px);
   }
 }
 
@@ -690,11 +713,12 @@ body {
   margin-left: -10px;
 }
 
-.container_input label, .container_input select{
+.container_input label,
+.container_input select {
   font-size: 11px;
 }
 
-.container_input select{
+.container_input select {
   margin-top: 2px;
   border-radius: 30px;
   outline: none;
